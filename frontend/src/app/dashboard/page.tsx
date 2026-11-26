@@ -33,7 +33,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Separator } from "@/components/ui/separator";
 import {
   clearSession,
   fetchCurrentUser,
@@ -57,49 +56,41 @@ type DashboardTab =
 const NAV_ITEMS: Array<{
   key: DashboardTab;
   label: string;
-  tableHint: string;
   icon: React.ComponentType<{ className?: string }>;
 }> = [
   {
     key: "overview",
     label: "Hub Overview",
-    tableHint: "All Modules",
     icon: LayoutDashboard,
   },
   {
     key: "organizations",
     label: "Organizations",
-    tableHint: "orgs • officers",
     icon: Building2,
   },
   {
     key: "memberships",
     label: "Memberships",
-    tableHint: "reqs • files",
     icon: Users,
   },
   {
     key: "announcements",
     label: "Announcements",
-    tableHint: "dispatches",
     icon: Megaphone,
   },
   {
     key: "finance",
     label: "Fees & Payments",
-    tableHint: "paymongo • OR",
     icon: CreditCard,
   },
   {
     key: "clearances",
     label: "Clearances",
-    tableHint: "college status",
     icon: ClipboardCheck,
   },
   {
     key: "profile",
     label: "Student Profile",
-    tableHint: "PSGC • ID",
     icon: UserCircle2,
   },
 ];
@@ -186,146 +177,85 @@ export default function DashboardPage() {
   ).length;
 
   return (
-    <div className="flex min-h-screen bg-ccis-cream/40">
-      {/* Sidebar */}
-      <aside className="hidden w-72 shrink-0 flex-col justify-between border-r border-ccis-ink/15 bg-gradient-to-b from-ccis-primary/85 via-ccis-primary/45 to-ccis-cream p-6 lg:flex">
-        <div className="space-y-6">
-          <div className="flex items-center gap-3">
-            <CcislsgCrest className="h-10 w-10" />
+    <div className="flex h-screen flex-col overflow-hidden bg-ccis-cream/40">
+      {/* Static Top Header */}
+      <header className="z-30 shrink-0 border-b border-ccis-ink/15 bg-gradient-to-r from-ccis-primary/85 via-ccis-primary/55 to-ccis-cream shadow-sm">
+        <div className="mx-auto flex max-w-7xl items-center justify-between gap-3 px-4 py-2 sm:px-6">
+          {/* Brand Identity */}
+          <button
+            type="button"
+            onClick={() => setActiveTab("overview")}
+            className="flex shrink-0 items-center gap-2.5 text-left focus:outline-none"
+          >
+            <CcislsgCrest className="h-9 w-9" />
             <div>
-              <p className="font-headline text-base font-semibold leading-none text-ccis-ink">
+              <p className="font-headline text-sm font-semibold leading-none text-ccis-ink">
                 CCISLSG Hub
               </p>
-              <p className="mt-1 font-subtext text-[10px] uppercase tracking-widest text-ccis-espresso">
+              <p className="mt-0.5 font-subtext text-[9px] uppercase tracking-wider text-ccis-espresso">
                 {user.college?.code || "CCIS"} Governance Portal
               </p>
             </div>
+          </button>
+
+          {/* Horizontal Governance Modules Navigation */}
+          <div className="min-w-0 flex-1 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+            <nav
+              aria-label="Governance Modules"
+              className="mx-auto flex w-max items-center gap-1"
+            >
+              {NAV_ITEMS.map((item) => {
+                const Icon = item.icon;
+                const isActive = activeTab === item.key;
+                return (
+                  <button
+                    key={item.key}
+                    type="button"
+                    onClick={() => setActiveTab(item.key)}
+                    className={
+                      isActive
+                        ? "inline-flex shrink-0 items-center gap-1.5 rounded-md border border-ccis-ink/20 bg-ccis-paper px-2.5 py-1.5 font-headline text-xs font-semibold leading-none text-ccis-ink shadow-sm"
+                        : "inline-flex shrink-0 items-center gap-1.5 rounded-md px-2.5 py-1.5 font-headline text-xs leading-none text-ccis-espresso/85 transition-colors hover:bg-ccis-paper/65 hover:text-ccis-ink"
+                    }
+                  >
+                    <Icon className="h-3.5 w-3.5 shrink-0 text-ccis-orange" />
+                    <span>{item.label}</span>
+                  </button>
+                );
+              })}
+            </nav>
           </div>
 
-          <Separator />
-
-          <nav className="space-y-1" aria-label="ERD Module Navigation">
-            <p className="px-2.5 pb-1.5 font-subtext text-[10px] uppercase tracking-widest text-ccis-espresso/80">
-              Governance Modules
-            </p>
-            {NAV_ITEMS.map((item) => {
-              const Icon = item.icon;
-              const isActive = activeTab === item.key;
-              return (
-                <button
-                  key={item.key}
-                  type="button"
-                  onClick={() => setActiveTab(item.key)}
-                  className={
-                    isActive
-                      ? "flex w-full items-center justify-between rounded-lg border border-ccis-ink/20 bg-ccis-paper px-3 py-2.5 text-left font-headline text-sm font-semibold text-ccis-ink shadow-sm"
-                      : "flex w-full items-center justify-between rounded-lg px-3 py-2 text-left font-headline text-sm text-ccis-espresso/85 transition-colors hover:bg-ccis-paper/65 hover:text-ccis-ink"
-                  }
-                >
-                  <span className="flex items-center gap-2.5">
-                    <Icon className="h-4 w-4 text-ccis-orange" />
-                    {item.label}
-                  </span>
-                  <span className="font-subtext text-[10px] text-ccis-espresso/65">
-                    {item.tableHint}
-                  </span>
-                </button>
-              );
-            })}
-          </nav>
-        </div>
-
-        <div className="space-y-4 rounded-xl border border-ccis-ink/15 bg-ccis-paper/85 p-4">
-          <div className="flex items-center gap-3">
-            <Avatar>
-              <AvatarFallback>{initials}</AvatarFallback>
-            </Avatar>
-            <div className="min-w-0 flex-1">
-              <p className="truncate font-headline text-sm font-medium text-ccis-ink">
-                {user.fullName}
-              </p>
-              <p className="truncate font-subtext text-[11px] text-ccis-espresso/80">
-                {user.studentProfile?.student_no || user.username || user.email}
-              </p>
-            </div>
-          </div>
-          <Button
-            variant="outline"
-            size="sm"
-            className="w-full"
-            onClick={handleSignOut}
-          >
-            <LogOut className="h-3.5 w-3.5 text-ccis-orange" />
-            Sign Out
-          </Button>
-        </div>
-      </aside>
-
-      {/* Main Content */}
-      <div className="flex flex-1 flex-col">
-        <header className="flex flex-wrap items-center justify-between gap-4 border-b border-ccis-ink/15 bg-ccis-paper/90 px-6 py-4 backdrop-blur-sm sm:px-8">
-          <div className="flex items-center gap-3">
-            <div className="lg:hidden">
-              <CcislsgCrest className="h-9 w-9" />
-            </div>
-            <div>
-              <p className="font-subtext text-[11px] uppercase tracking-widest text-ccis-espresso/75">
-                {user.college?.name ||
-                  "College of Computing and Information Sciences"}
-              </p>
-              <h1 className="font-headline text-lg font-semibold text-ccis-ink">
-                CCISLSG Digital Hub • AY 2026–2027
-              </h1>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-2.5">
-            <Badge variant={authMode === "supabase" ? "orange" : "default"}>
-              {authMode === "supabase" ? "Supabase PostgreSQL" : "Demo Store"}
+          {/* Refresh Action */}
+          <div className="flex shrink-0 items-center gap-1.5">
+            <Badge
+              variant={authMode === "supabase" ? "orange" : "default"}
+              className="hidden px-2 py-0.5 text-[10px] lg:inline-flex"
+            >
+              {authMode === "supabase" ? "Supabase" : "Demo"}
             </Badge>
-            <Badge variant="cream">{formatRoleLabel(user.role)}</Badge>
             <Button
               type="button"
               variant="ghost"
               size="icon"
+              className="h-8 w-8"
               onClick={loadSnapshot}
               aria-label="Refresh hub data"
               title="Refresh data"
             >
               <RefreshCw
-                className={`h-4 w-4 text-ccis-espresso ${
+                className={`h-3.5 w-3.5 text-ccis-espresso ${
                   refreshing ? "animate-spin" : ""
                 }`}
               />
             </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              className="lg:hidden"
-              onClick={handleSignOut}
-            >
-              <LogOut className="h-3.5 w-3.5 text-ccis-orange" />
-              Sign Out
-            </Button>
           </div>
-        </header>
-
-        {/* Mobile Nav Strip */}
-        <div className="flex gap-1.5 overflow-x-auto border-b border-ccis-ink/10 bg-ccis-cream/55 px-4 py-2.5 lg:hidden">
-          {NAV_ITEMS.map((item) => (
-            <Button
-              key={item.key}
-              type="button"
-              size="sm"
-              variant={activeTab === item.key ? "brand" : "outline"}
-              onClick={() => setActiveTab(item.key)}
-            >
-              {item.label}
-            </Button>
-          ))}
         </div>
+      </header>
 
-        <main className="mx-auto w-full max-w-6xl flex-1 space-y-6 p-6 sm:p-8">
+      {/* Scrollable Main Content */}
+      <main className="flex-1 overflow-y-auto">
+        <div className="mx-auto w-full max-w-7xl space-y-6 p-6 sm:p-8">
           {activeTab === "overview" && (
             <div className="space-y-6">
               {/* Welcome Banner */}
@@ -355,7 +285,13 @@ export default function DashboardPage() {
                     </p>
                     <p className="mt-0.5 font-subtext text-sm font-medium text-ccis-ink">
                       {user.studentProfile?.student_no || "Unassigned"} •{" "}
-                      {user.studentProfile?.city_name || "Update Profile"}
+                      {user.studentProfile?.barangay_name
+                        ? `${user.studentProfile.barangay_name}, `
+                        : ""}
+                      {user.studentProfile?.city_name || "Butuan City"}
+                      {user.studentProfile?.city_code
+                        ? ` (${user.studentProfile.city_code})`
+                        : ""}
                     </p>
                   </div>
                 </div>
@@ -587,8 +523,62 @@ export default function DashboardPage() {
           {activeTab === "profile" && (
             <ProfileTab user={user} onUserUpdated={(u) => setUser(u)} />
           )}
-        </main>
-      </div>
+        </div>
+      </main>
+
+      {/* Static Bottom Footer with Sign Out Card */}
+      <footer className="z-30 shrink-0 border-t border-ccis-ink/15 bg-gradient-to-r from-ccis-cream/95 via-ccis-primary/45 to-ccis-primary/75 px-4 py-2.5 shadow-sm sm:px-8">
+        <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-3">
+          {/* Institutional Footer Info */}
+          <div className="hidden items-center gap-2.5 sm:flex">
+            <CcislsgCrest className="h-7 w-7" />
+            <div>
+              <p className="font-headline text-xs font-semibold text-ccis-ink">
+                {user.college?.name ||
+                  "College of Computing and Information Sciences"}
+              </p>
+              <p className="font-subtext text-[10px] uppercase tracking-wider text-ccis-espresso/80">
+                CCISLSG Digital Hub • AY 2026–2027 •{" "}
+                {formatRoleLabel(user.role)}
+              </p>
+            </div>
+          </div>
+
+          {/* User & Sign Out Card */}
+          <div className="ml-auto flex w-full items-center justify-between gap-3 rounded-xl border border-ccis-ink/15 bg-ccis-paper/95 px-3.5 py-2 shadow-sm sm:w-auto">
+            <button
+              type="button"
+              onClick={() => setActiveTab("profile")}
+              className="flex min-w-0 items-center gap-2.5 text-left transition-opacity hover:opacity-85"
+              title="Open Student Profile"
+            >
+              <Avatar className="h-9 w-9">
+                <AvatarFallback className="text-xs">{initials}</AvatarFallback>
+              </Avatar>
+              <div className="min-w-0">
+                <p className="truncate font-headline text-sm font-medium leading-tight text-ccis-ink">
+                  {user.fullName}
+                </p>
+                <p className="truncate font-subtext text-[11px] text-ccis-espresso/80">
+                  {user.studentProfile?.student_no ||
+                    user.username ||
+                    user.email}
+                </p>
+              </div>
+            </button>
+
+            <Button
+              variant="outline"
+              size="sm"
+              className="shrink-0"
+              onClick={handleSignOut}
+            >
+              <LogOut className="h-3.5 w-3.5 text-ccis-orange" />
+              <span>Sign Out</span>
+            </Button>
+          </div>
+        </div>
+      </footer>
     </div>
   );
 }

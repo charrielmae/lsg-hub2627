@@ -366,7 +366,17 @@ export function OrganizationsTab({
                   {org.approvedMembersCount} Verified
                 </span>
               </div>
-              <CardTitle className="text-xl">{org.name}</CardTitle>
+              <div className="flex items-center gap-3">
+                {org.logo_url && (
+                  /* eslint-disable-next-line @next/next/no-img-element */
+                  <img
+                    src={org.logo_url}
+                    alt={org.name}
+                    className="h-10 w-10 shrink-0 object-contain"
+                  />
+                )}
+                <CardTitle className="text-xl">{org.name}</CardTitle>
+              </div>
               <CardDescription className="font-headline text-sm text-ccis-espresso/85">
                 {org.description || "Official CCIS student organization."}
               </CardDescription>

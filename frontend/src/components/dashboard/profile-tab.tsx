@@ -164,7 +164,7 @@ export function ProfileTab({ user, onUserUpdated }: ProfileTabProps) {
 
             <div className="space-y-3">
               <p className="font-subtext text-xs uppercase tracking-wider text-ccis-espresso/80">
-                Philippine Standard Geographic Code (PSGC) Address Fields
+                Address, Region &amp; Postal Code Fields (`student_profiles`)
               </p>
 
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
@@ -174,7 +174,7 @@ export function ProfileTab({ user, onUserUpdated }: ProfileTabProps) {
                     id="reg-name"
                     value={regionName}
                     onChange={(e) => setRegionName(e.target.value)}
-                    placeholder="e.g. NCR"
+                    placeholder="e.g. Caraga Region (Region XIII)"
                   />
                 </div>
                 <div className="space-y-1">
@@ -183,7 +183,7 @@ export function ProfileTab({ user, onUserUpdated }: ProfileTabProps) {
                     id="reg-code"
                     value={regionCode}
                     onChange={(e) => setRegionCode(e.target.value)}
-                    placeholder="130000000"
+                    placeholder="160000000"
                   />
                 </div>
                 <div className="space-y-1">
@@ -192,7 +192,7 @@ export function ProfileTab({ user, onUserUpdated }: ProfileTabProps) {
                     id="prov-name"
                     value={provinceName}
                     onChange={(e) => setProvinceName(e.target.value)}
-                    placeholder="e.g. Metro Manila"
+                    placeholder="e.g. Agusan del Norte"
                   />
                 </div>
                 <div className="space-y-1">
@@ -201,26 +201,26 @@ export function ProfileTab({ user, onUserUpdated }: ProfileTabProps) {
                     id="prov-code"
                     value={provinceCode}
                     onChange={(e) => setProvinceCode(e.target.value)}
-                    placeholder="137400000"
+                    placeholder="160200000"
                   />
                 </div>
 
                 <div className="space-y-1">
-                  <Label htmlFor="city-name">City / Municipality Name</Label>
+                  <Label htmlFor="city-name">City / Municipality</Label>
                   <Input
                     id="city-name"
                     value={cityName}
                     onChange={(e) => setCityName(e.target.value)}
-                    placeholder="e.g. Quezon City"
+                    placeholder="e.g. Butuan City"
                   />
                 </div>
                 <div className="space-y-1">
-                  <Label htmlFor="city-code">City Code</Label>
+                  <Label htmlFor="city-code">Postal / City Code</Label>
                   <Input
                     id="city-code"
                     value={cityCode}
                     onChange={(e) => setCityCode(e.target.value)}
-                    placeholder="137404000"
+                    placeholder="8600"
                   />
                 </div>
                 <div className="space-y-1">
@@ -229,7 +229,7 @@ export function ProfileTab({ user, onUserUpdated }: ProfileTabProps) {
                     id="brgy-name"
                     value={barangayName}
                     onChange={(e) => setBarangayName(e.target.value)}
-                    placeholder="e.g. Diliman"
+                    placeholder="e.g. Ampayon"
                   />
                 </div>
                 <div className="space-y-1">
@@ -238,7 +238,7 @@ export function ProfileTab({ user, onUserUpdated }: ProfileTabProps) {
                     id="brgy-code"
                     value={barangayCode}
                     onChange={(e) => setBarangayCode(e.target.value)}
-                    placeholder="137404001"
+                    placeholder="160202003"
                   />
                 </div>
               </div>

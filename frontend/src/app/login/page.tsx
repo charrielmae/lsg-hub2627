@@ -141,8 +141,8 @@ export default function LoginPage() {
       </div>
 
       <Card className="relative z-10 w-full max-w-md border-ccis-ink/20 bg-ccis-paper/95 shadow-xl">
-        <CardHeader className="items-center space-y-3 pb-5 text-center">
-          <CcislsgCrest className="h-12 w-12" />
+        <CardHeader className="items-center space-y-2.5 pb-5 text-center">
+          <CcislsgCrest className="h-20 w-20" />
           <div className="space-y-1">
             <p className="font-subtext text-[11px] uppercase tracking-widest text-ccis-orange">
               Local Student Government Hub

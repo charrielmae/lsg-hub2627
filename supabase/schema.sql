@@ -329,16 +329,16 @@ VALUES
     '00000000-0000-4000-8000-000000000001',
     '2023-00101',
     '0917-555-0101',
-    '130000000', 'NCR', '133900000', 'Metro Manila',
-    '133900000', 'Manila', '133901001', 'Sampaloc'
+    '160000000', 'Caraga Region (Region XIII)', '160200000', 'Agusan del Norte',
+    '8600', 'Butuan City', '160202003', 'Ampayon'
   ),
   (
     '22222222-2222-4222-8222-222222222202',
     '00000000-0000-4000-8000-000000000002',
     '2024-00418',
     '0918-555-0418',
-    '130000000', 'NCR', '137400000', 'Metro Manila',
-    '137404000', 'Quezon City', '137404001', 'Diliman'
+    '160000000', 'Caraga Region (Region XIII)', '160200000', 'Agusan del Norte',
+    '8600', 'Butuan City', '160202003', 'Ampayon'
   )
 ON CONFLICT (user_id) DO NOTHING;
 
