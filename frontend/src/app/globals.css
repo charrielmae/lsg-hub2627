@@ -1,0 +1,107 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ==========================================================================
+   CCISLSG Typography (@font-face placeholders -> /public/fonts/)
+   Drop font files into frontend/public/fonts/ to override Google fallbacks.
+   ========================================================================== */
+
+@font-face {
+  font-family: "MM Rachel";
+  src:
+    local("MM Rachel"),
+    local("MMRachel-Regular"),
+    url("/fonts/MMRachel-Regular.woff2") format("woff2"),
+    url("/fonts/MMRachel-Regular.otf") format("opentype"),
+    url("/fonts/MMRachel-Regular.ttf") format("truetype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Stara";
+  src:
+    local("Stara Medium"),
+    local("Stara-Medium"),
+    url("/fonts/Stara-Medium.woff2") format("woff2"),
+    url("/fonts/Stara-Medium.otf") format("opentype"),
+    url("/fonts/Stara-Medium.ttf") format("truetype");
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "ABC Monument Grotesk Mono";
+  src:
+    local("ABC Monument Grotesk Mono"),
+    local("ABS Monument Grotesk Mono"),
+    local("ABCMonumentGroteskMono-Regular"),
+    url("/fonts/ABCMonumentGroteskMono-Regular.woff2") format("woff2"),
+    url("/fonts/ABCMonumentGroteskMono-Regular.otf") format("opentype"),
+    url("/fonts/ABCMonumentGroteskMono-Regular.ttf") format("truetype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* ==========================================================================
+   Shadcn UI Theme Variables mapped to CCISLSG Brand Palette:
+   - Primary:       #FAC864 -> hsl(40, 94%, 69%)
+   - Secondary:     #FF8E13 -> hsl(31, 100%, 54%)
+   - Complimentary: #FF8113 -> hsl(28, 100%, 54%)
+                    #FBF4C3 -> hsl(52, 88%, 87%)
+   ========================================================================== */
+
+@layer base {
+  :root {
+    --font-fallback-display: "Cormorant Garamond";
+    --font-fallback-headline: "Plus Jakarta Sans";
+    --font-fallback-mono: "IBM Plex Mono";
+
+    --background: 52 88% 95%;
+    --foreground: 33 43% 8%;
+
+    --card: 50 100% 98%;
+    --card-foreground: 33 43% 8%;
+
+    --popover: 50 100% 98%;
+    --popover-foreground: 33 43% 8%;
+
+    /* Primary: #FAC864 */
+    --primary: 40 94% 69%;
+    --primary-foreground: 33 43% 8%;
+
+    /* Secondary: #FF8E13 */
+    --secondary: 31 100% 54%;
+    --secondary-foreground: 50 100% 98%;
+
+    /* Complimentary Cream: #FBF4C3 */
+    --muted: 52 88% 87%;
+    --muted-foreground: 34 49% 22%;
+
+    /* Complimentary Orange: #FF8113 */
+    --accent: 28 100% 54%;
+    --accent-foreground: 50 100% 98%;
+
+    --destructive: 0 84% 55%;
+    --destructive-foreground: 50 100% 98%;
+
+    --border: 43 58% 74%;
+    --input: 43 58% 72%;
+    --ring: 28 100% 54%;
+
+    --radius: 0.75rem;
+  }
+
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground antialiased selection:bg-ccis-orange selection:text-white;
+    font-family: "Stara", var(--font-fallback-headline), system-ui, sans-serif;
+  }
+}
