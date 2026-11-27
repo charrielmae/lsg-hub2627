@@ -7,6 +7,7 @@ export type Role =
   | "ADMIN";
 
 export type OrgType = "ORG" | "LSG" | "COUNCIL";
+export type Program = "BSCS" | "BSIS" | "BSIT";
 export type MembershipStatus = "PENDING" | "APPROVED" | "REJECTED";
 export type PaymentStatus = "PENDING" | "PAID" | "FAILED" | "CANCELLED";
 export type ClearanceStatus = "CLEARED" | "PENDING" | "HOLD";
@@ -43,6 +44,12 @@ export interface UserProfile {
   createdAt: string;
   college: CollegeRecord | null;
   studentProfile: StudentProfileRecord | null;
+  studentEnrollment?: {
+    program: Program;
+    yearLevel: string;
+    organizationId: string;
+    organizationName: string;
+  } | null;
   officerOrganizations: Array<{
     id: string;
     name: string;
@@ -187,6 +194,7 @@ export interface HubFeeItem {
   semester: string;
   school_year: string;
   is_active: boolean;
+  paidCount?: number;
   organization: {
     id: string;
     name: string;
@@ -251,6 +259,31 @@ export interface DirectoryUser {
   studentNo: string | null;
 }
 
+export interface StudentMasterItem {
+  id: string;
+  student_no: string;
+  full_name: string;
+  program: Program;
+  year_level: string;
+  organization_id: string;
+  organizationName: string;
+  is_active: boolean;
+}
+
+export interface StudentsListResponse {
+  counts: {
+    total: number;
+    BSIT: number;
+    BSIS: number;
+    BSCS: number;
+  };
+  items: StudentMasterItem[];
+  totalFiltered: number;
+  page: number;
+  limit: number;
+  totalPages: number;
+}
+
 export interface HubSnapshot {
   colleges: CollegeRecord[];
   organizations: HubOrganization[];
@@ -260,6 +293,12 @@ export interface HubSnapshot {
   payments: HubPayment[];
   clearances: HubClearance[];
   directoryUsers: DirectoryUser[];
+  studentCounts?: {
+    total: number;
+    BSIT: number;
+    BSIS: number;
+    BSCS: number;
+  };
 }
 
 const API_BASE_URL =
@@ -372,6 +411,23 @@ export async function loginRequest(
   return payload;
 }
 
+export async function studentLoginRequest(
+  studentNo: string,
+  captchaToken: string,
+  captchaAnswer: string
+): Promise<LoginResponse> {
+  const payload = await apiRequest<LoginResponse>("/auth/student-login", {
+    method: "POST",
+    body: JSON.stringify({
+      studentNo,
+      captchaToken,
+      captchaAnswer,
+    }),
+  });
+  saveSession(payload);
+  return payload;
+}
+
 export async function fetchCurrentUser(): Promise<{
   user: UserProfile;
   mode: "supabase" | "demo";
@@ -419,6 +475,22 @@ export function clearSession() {
 
 export function fetchHubSnapshot(): Promise<HubSnapshot> {
   return apiRequest<HubSnapshot>("/hub/snapshot");
+}
+
+export function fetchStudentsMasterlistApi(params: {
+  program?: string;
+  year?: string;
+  search?: string;
+  page?: number;
+  limit?: number;
+}): Promise<StudentsListResponse> {
+  const qs = new URLSearchParams();
+  if (params.program) qs.set("program", params.program);
+  if (params.year) qs.set("year", params.year);
+  if (params.search) qs.set("search", params.search);
+  if (params.page) qs.set("page", String(params.page));
+  if (params.limit) qs.set("limit", String(params.limit));
+  return apiRequest<StudentsListResponse>(`/hub/students?${qs.toString()}`);
 }
 
 export function createOrganizationApi(input: {
@@ -506,10 +578,19 @@ export function createFeeItemApi(input: {
   });
 }
 
-export function checkoutPaymentApi(feeItemId: string) {
+export function deleteFeeItemApi(id: string) {
+  return apiRequest(`/hub/fee-items/${id}`, {
+    method: "DELETE",
+  });
+}
+
+export function checkoutPaymentApi(
+  feeItemId: string,
+  paymentMethod = "PayMongo"
+) {
   return apiRequest("/hub/payments/checkout", {
     method: "POST",
-    body: JSON.stringify({ feeItemId }),
+    body: JSON.stringify({ feeItemId, paymentMethod }),
   });
 }
 

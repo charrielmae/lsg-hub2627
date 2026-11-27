@@ -1,0 +1,273 @@
+{
+  "users": [
+    {
+      "id": "00000000-0000-4000-8000-000000000001",
+      "google_id": null,
+      "email": "charrielmae.ayuban@carsu.edu.ph",
+      "username": "charrielmae.ayuban",
+      "full_name": "Charriel Mae Ayuban",
+      "role": "CCISLSG_GOVERNOR",
+      "college_id": "11111111-1111-4111-8111-111111111111",
+      "is_active": true,
+      "created_at": "2026-08-15T08:00:00.000Z",
+      "password_hash": "scrypt:25b57e39df9d1a7b4ca5740ec8972f3c:423efd88dce018b43cb0b47422142d17fbcfed0a98f340cf4173c44a74e1fc45d5292ef6430468428def3a0f9c28afa0543a55790b30ebcd036e573953d4ff6b"
+    },
+    {
+      "id": "00000000-0000-4000-8000-000000000002",
+      "google_id": null,
+      "email": "charlesgerald.ayuban@carsu.edu.ph",
+      "username": "charlesgerald.ayuban",
+      "full_name": "Ayuban, Charles Gerald M.",
+      "role": "STUDENT",
+      "college_id": "11111111-1111-4111-8111-111111111111",
+      "is_active": true,
+      "created_at": "2026-08-18T09:30:00.000Z",
+      "password_hash": null
+    },
+    {
+      "id": "00000000-0000-4000-8000-000000000003",
+      "google_id": null,
+      "email": "261-02974@carsu.edu.ph",
+      "username": "261-02974",
+      "full_name": "Abuan, Daniela Joy M.",
+      "role": "STUDENT",
+      "college_id": "11111111-1111-4111-8111-111111111111",
+      "is_active": true,
+      "created_at": "2026-08-20T10:15:00.000Z",
+      "password_hash": null
+    },
+    {
+      "id": "b9caaefd-4d0c-4479-86d6-7ec22ae2d14c",
+      "google_id": null,
+      "email": "251-02738@carsu.edu.ph",
+      "username": "251-02738",
+      "full_name": "Abbu, Jemuel L.",
+      "role": "STUDENT",
+      "college_id": "11111111-1111-4111-8111-111111111111",
+      "is_active": true,
+      "created_at": "2026-11-27T15:52:12.985Z",
+      "password_hash": null
+    }
+  ],
+  "studentProfiles": [
+    {
+      "id": "22222222-2222-4222-8222-222222222201",
+      "user_id": "00000000-0000-4000-8000-000000000001",
+      "student_no": "241-03025",
+      "contact_no": "0917-555-0101",
+      "region_code": "160000000",
+      "region_name": "Caraga Region (Region XIII)",
+      "province_code": "160200000",
+      "province_name": "Agusan del Norte",
+      "city_code": "8600",
+      "city_name": "Butuan City",
+      "barangay_code": "160202003",
+      "barangay_name": "Ampayon"
+    },
+    {
+      "id": "22222222-2222-4222-8222-222222222202",
+      "user_id": "00000000-0000-4000-8000-000000000002",
+      "student_no": "261-01458",
+      "contact_no": "0918-555-0418",
+      "region_code": "160000000",
+      "region_name": "Caraga Region (Region XIII)",
+      "province_code": "160200000",
+      "province_name": "Agusan del Norte",
+      "city_code": "8600",
+      "city_name": "Butuan City",
+      "barangay_code": "160202003",
+      "barangay_name": "Ampayon"
+    },
+    {
+      "id": "22222222-2222-4222-8222-222222222203",
+      "user_id": "00000000-0000-4000-8000-000000000003",
+      "student_no": "261-02974",
+      "contact_no": "0919-555-0892",
+      "region_code": "160000000",
+      "region_name": "Caraga Region (Region XIII)",
+      "province_code": "160200000",
+      "province_name": "Agusan del Norte",
+      "city_code": "8600",
+      "city_name": "Butuan City",
+      "barangay_code": "160202003",
+      "barangay_name": "Ampayon"
+    },
+    {
+      "id": "c6802b63-5fb2-4648-9496-a625b077e055",
+      "user_id": "b9caaefd-4d0c-4479-86d6-7ec22ae2d14c",
+      "student_no": "251-02738",
+      "contact_no": null,
+      "region_code": "160000000",
+      "region_name": "Caraga Region (Region XIII)",
+      "province_code": "160200000",
+      "province_name": "Agusan del Norte",
+      "city_code": "8600",
+      "city_name": "Butuan City",
+      "barangay_code": "160202003",
+      "barangay_name": "Ampayon"
+    }
+  ],
+  "feeItems": [
+    {
+      "id": "611ff200-6345-4919-afc8-e0f1d42cea9d",
+      "organization_id": "33333333-3333-4333-8333-333333333300",
+      "name": "All payments will be spend for all the 1st Semester Events",
+      "amount_centavos": 55000,
+      "semester": "1st Semester",
+      "school_year": "2026-2027",
+      "is_active": true
+    }
+  ],
+  "payments": [],
+  "receipts": [],
+  "announcements": [
+    {
+      "id": "88888888-8888-4888-8888-888888888801",
+      "organization_id": "33333333-3333-4333-8333-333333333300",
+      "author_id": "00000000-0000-4000-8000-000000000001",
+      "title": "Sangka 2026: CCIS Clinches Overall 4th Runner-Up!",
+      "body": "Congratulations, CCISians! Through the dedication of our athletes, cultural performers, esports contenders, working committees, and cheering constituents, the College of Computing and Information Sciences proudly finished as Overall 4th Runner-Up in Sangka 2026. Padayon, CCIS!",
+      "created_at": "2026-11-27T10:00:00.000Z",
+      "updated_at": "2026-11-27T10:00:00.000Z"
+    },
+    {
+      "id": "88888888-8888-4888-8888-888888888802",
+      "organization_id": "33333333-3333-4333-8333-333333333300",
+      "author_id": "00000000-0000-4000-8000-000000000001",
+      "title": "Official Directive: No Blocking of Clearance for Sangka 2026",
+      "body": "Please be informed that the CCIS Local Student Government strictly enforces a No Blocking of Clearance policy in relation to Sangka 2026 attendance, fines, or event participation. No constituent clearance shall be held or delayed due to Sangka 2026 activities.",
+      "created_at": "2026-11-27T09:30:00.000Z",
+      "updated_at": "2026-11-27T09:30:00.000Z"
+    },
+    {
+      "id": "88888888-8888-4888-8888-888888888803",
+      "organization_id": "33333333-3333-4333-8333-333333333301",
+      "author_id": "00000000-0000-4000-8000-000000000001",
+      "title": "Tuklas.exe — SITES Tech Discovery & Freshmen Onboarding",
+      "body": "Welcome to Tuklas.exe! The Society of Information Technology Students (SITES) invites all BSIT students to join our flagship tech orientation, skills discovery showcase, and student community kickoff.",
+      "created_at": "2026-11-26T15:00:00.000Z",
+      "updated_at": "2026-11-26T15:00:00.000Z"
+    },
+    {
+      "id": "88888888-8888-4888-8888-888888888804",
+      "organization_id": "33333333-3333-4333-8333-333333333301",
+      "author_id": "00000000-0000-4000-8000-000000000001",
+      "title": "SITES 1st General Assembly — AY 2026–2027",
+      "body": "All BSIT constituents under the Society of Information Technology Students are enjoined to attend the 1st General Assembly for the presentation of officers, semesterly calendar of activities, financial transparency report, and open forum.",
+      "created_at": "2026-11-26T13:00:00.000Z",
+      "updated_at": "2026-11-26T13:00:00.000Z"
+    },
+    {
+      "id": "88888888-8888-4888-8888-888888888805",
+      "organization_id": "33333333-3333-4333-8333-333333333301",
+      "author_id": "00000000-0000-4000-8000-000000000001",
+      "title": "SITES Peer-to-Peer Tutorial Program",
+      "body": "Need review support for upcoming assessments? SITES Peer-to-Peer Tutorial sessions are now open for BSIT students covering programming fundamentals, web technologies, networking, and database coursework.",
+      "created_at": "2026-11-26T10:00:00.000Z",
+      "updated_at": "2026-11-26T10:00:00.000Z"
+    },
+    {
+      "id": "88888888-8888-4888-8888-888888888806",
+      "organization_id": "33333333-3333-4333-8333-333333333302",
+      "author_id": "00000000-0000-4000-8000-000000000001",
+      "title": "Tuklas.exe — ISS Systems & Innovation Orientation",
+      "body": "Information System Students (ISS) welcomes all BSIS constituents to Tuklas.exe—featuring systems analysis tracks, student organization orientation, and collaborative tech activities across CCIS.",
+      "created_at": "2026-11-25T15:00:00.000Z",
+      "updated_at": "2026-11-25T15:00:00.000Z"
+    },
+    {
+      "id": "88888888-8888-4888-8888-888888888807",
+      "organization_id": "33333333-3333-4333-8333-333333333302",
+      "author_id": "00000000-0000-4000-8000-000000000001",
+      "title": "ISS Peer-to-Peer Tutorial Sessions",
+      "body": "Information System Students (ISS) is launching Peer-to-Peer Tutorial study groups to assist BSIS students in enterprise architecture, database management, business process modeling, and core programming subjects.",
+      "created_at": "2026-11-25T11:00:00.000Z",
+      "updated_at": "2026-11-25T11:00:00.000Z"
+    },
+    {
+      "id": "88888888-8888-4888-8888-888888888808",
+      "organization_id": "33333333-3333-4333-8333-333333333303",
+      "author_id": "00000000-0000-4000-8000-000000000001",
+      "title": "Tuklas.exe — CSS Computing & Research Showcase",
+      "body": "Computer Science Students (CSS) invites all BSCS students to participate in Tuklas.exe for an introduction to CS specializations, algorithmic problem-solving, and student community initiatives.",
+      "created_at": "2026-11-24T15:00:00.000Z",
+      "updated_at": "2026-11-24T15:00:00.000Z"
+    },
+    {
+      "id": "88888888-8888-4888-8888-888888888809",
+      "organization_id": "33333333-3333-4333-8333-333333333303",
+      "author_id": "00000000-0000-4000-8000-000000000001",
+      "title": "CSS Peer-to-Peer Tutorial Sessions",
+      "body": "Join the Computer Science Students (CSS) Peer-to-Peer Tutorial sessions! Senior BSCS mentors will facilitate guided reviews on data structures, algorithms, discrete structures, and object-oriented programming.",
+      "created_at": "2026-11-24T10:30:00.000Z",
+      "updated_at": "2026-11-24T10:30:00.000Z"
+    }
+  ],
+  "memberships": [
+    {
+      "id": "66666666-6666-4666-8666-666666666601",
+      "user_id": "00000000-0000-4000-8000-000000000002",
+      "organization_id": "33333333-3333-4333-8333-333333333301",
+      "status": "APPROVED",
+      "remarks": "Verified against AY 2026-2027 BSIT orientation masterlist.",
+      "verified_by": "00000000-0000-4000-8000-000000000001",
+      "applied_at": "2026-09-02T08:15:00.000Z"
+    },
+    {
+      "id": "66666666-6666-4666-8666-666666666603",
+      "user_id": "00000000-0000-4000-8000-000000000003",
+      "organization_id": "33333333-3333-4333-8333-333333333303",
+      "status": "PENDING",
+      "remarks": "Submitted registration form for 1st Semester BSCS.",
+      "verified_by": null,
+      "applied_at": "2026-11-24T11:30:00.000Z"
+    },
+    {
+      "id": "f45c02e5-f978-498d-b72b-840786d02418",
+      "user_id": "b9caaefd-4d0c-4479-86d6-7ec22ae2d14c",
+      "organization_id": "33333333-3333-4333-8333-333333333303",
+      "status": "APPROVED",
+      "remarks": "Designated via BSCS (2nd Year) orientation masterlist.",
+      "verified_by": "00000000-0000-4000-8000-000000000001",
+      "applied_at": "2026-11-27T15:52:12.986Z"
+    }
+  ],
+  "membershipFiles": [
+    {
+      "id": "77777777-7777-4777-8777-777777777701",
+      "membership_id": "66666666-6666-4666-8666-666666666601",
+      "requirement_id": "55555555-5555-4555-8555-555555555501",
+      "file_url": "https://storage.ccislsg.edu.ph/cor/261-01458-cor-1s2627.pdf",
+      "file_key": "cor/261-01458-cor-1s2627.pdf"
+    }
+  ],
+  "clearances": [
+    {
+      "id": "cccccccc-cccc-4ccc-8ccc-cccccccccc01",
+      "user_id": "00000000-0000-4000-8000-000000000001",
+      "college_id": "11111111-1111-4111-8111-111111111111",
+      "semester": "1st Semester AY 2026-2027",
+      "status": "CLEARED",
+      "issued_by": "00000000-0000-4000-8000-000000000001",
+      "issued_at": "2026-11-15T08:00:00.000Z"
+    },
+    {
+      "id": "cccccccc-cccc-4ccc-8ccc-cccccccccc02",
+      "user_id": "00000000-0000-4000-8000-000000000002",
+      "college_id": "11111111-1111-4111-8111-111111111111",
+      "semester": "1st Semester AY 2026-2027",
+      "status": "PENDING",
+      "issued_by": "00000000-0000-4000-8000-000000000001",
+      "issued_at": "2026-11-20T09:00:00.000Z"
+    },
+    {
+      "id": "cccccccc-cccc-4ccc-8ccc-cccccccccc03",
+      "user_id": "00000000-0000-4000-8000-000000000003",
+      "college_id": "11111111-1111-4111-8111-111111111111",
+      "semester": "1st Semester AY 2026-2027",
+      "status": "HOLD",
+      "issued_by": "00000000-0000-4000-8000-000000000001",
+      "issued_at": "2026-11-24T15:00:00.000Z"
+    }
+  ]
+}

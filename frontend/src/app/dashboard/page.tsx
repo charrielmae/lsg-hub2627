@@ -7,6 +7,7 @@ import {
   Building2,
   ClipboardCheck,
   CreditCard,
+  GraduationCap,
   LayoutDashboard,
   LogOut,
   Megaphone,
@@ -23,6 +24,7 @@ import { FinanceTab } from "@/components/dashboard/finance-tab";
 import { MembershipsTab } from "@/components/dashboard/memberships-tab";
 import { OrganizationsTab } from "@/components/dashboard/organizations-tab";
 import { ProfileTab } from "@/components/dashboard/profile-tab";
+import { StudentsTab } from "@/components/dashboard/students-tab";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -46,6 +48,7 @@ import {
 
 type DashboardTab =
   | "overview"
+  | "students"
   | "organizations"
   | "memberships"
   | "announcements"
@@ -56,12 +59,19 @@ type DashboardTab =
 const NAV_ITEMS: Array<{
   key: DashboardTab;
   label: string;
+  staffOnly?: boolean;
   icon: React.ComponentType<{ className?: string }>;
 }> = [
   {
     key: "overview",
-    label: "Hub Overview",
+    label: "Overview",
     icon: LayoutDashboard,
+  },
+  {
+    key: "students",
+    label: "Students",
+    staffOnly: true,
+    icon: GraduationCap,
   },
   {
     key: "organizations",
@@ -90,7 +100,7 @@ const NAV_ITEMS: Array<{
   },
   {
     key: "profile",
-    label: "Student Profile",
+    label: "Profile",
     icon: UserCircle2,
   },
 ];
@@ -116,6 +126,37 @@ export default function DashboardPage() {
       setRefreshing(false);
     }
   }, []);
+
+  // Automatically sync Admin <-> Student changes in real time (on tab focus & every 5s)
+  React.useEffect(() => {
+    if (!user) return;
+
+    const silentSync = async () => {
+      if (document.visibilityState !== "visible") return;
+      try {
+        const data = await fetchHubSnapshot();
+        setSnapshot(data);
+      } catch {
+        // Ignore transient background poll errors
+      }
+    };
+
+    const handleVisibility = () => {
+      if (document.visibilityState === "visible") {
+        void silentSync();
+      }
+    };
+
+    window.addEventListener("focus", silentSync);
+    document.addEventListener("visibilitychange", handleVisibility);
+    const intervalId = window.setInterval(silentSync, 5000);
+
+    return () => {
+      window.removeEventListener("focus", silentSync);
+      document.removeEventListener("visibilitychange", handleVisibility);
+      window.clearInterval(intervalId);
+    };
+  }, [user]);
 
   React.useEffect(() => {
     let mounted = true;
@@ -143,8 +184,9 @@ export default function DashboardPage() {
   }, [router]);
 
   function handleSignOut() {
+    const goOfficer = isStaffUser(user);
     clearSession();
-    router.replace("/login");
+    router.replace(goOfficer ? "/login/officer" : "/login");
   }
 
   if (loading || !user || !snapshot) {
@@ -161,6 +203,9 @@ export default function DashboardPage() {
   }
 
   const isStaff = isStaffUser(user);
+  const visibleNavItems = NAV_ITEMS.filter(
+    (item) => !item.staffOnly || isStaff
+  );
   const initials = user.fullName
     .split(" ")
     .map((part) => part[0])
@@ -204,7 +249,7 @@ export default function DashboardPage() {
               aria-label="Governance Modules"
               className="mx-auto flex w-max items-center gap-1"
             >
-              {NAV_ITEMS.map((item) => {
+              {visibleNavItems.map((item) => {
                 const Icon = item.icon;
                 const isActive = activeTab === item.key;
                 return (
@@ -262,15 +307,27 @@ export default function DashboardPage() {
               <section className="relative overflow-hidden rounded-2xl border border-ccis-ink/20 bg-gradient-to-r from-ccis-primary via-ccis-primary/80 to-ccis-cream p-6 shadow-sm sm:p-8">
                 <div className="relative z-10 flex flex-col justify-between gap-6 md:flex-row md:items-end">
                   <div className="space-y-2">
-                    <div className="inline-flex items-center gap-2 rounded-full border border-ccis-ink/15 bg-ccis-paper/85 px-3 py-1">
-                      <Shield className="h-3.5 w-3.5 text-ccis-orange" />
-                      <span className="font-subtext text-[11px] uppercase tracking-wider text-ccis-ink">
-                        {formatRoleLabel(user.role)} •{" "}
-                        {user.college?.code || "CCIS"}
-                      </span>
+                    <div className="inline-flex flex-wrap items-center gap-2">
+                      <div className="inline-flex items-center gap-2 rounded-full border border-ccis-ink/15 bg-ccis-paper/85 px-3 py-1">
+                        <Shield className="h-3.5 w-3.5 text-ccis-orange" />
+                        <span className="font-subtext text-[11px] uppercase tracking-wider text-ccis-ink">
+                          {formatRoleLabel(user.role)} •{" "}
+                          {user.college?.code || "CCIS"}
+                        </span>
+                      </div>
+                      {user.studentEnrollment && (
+                        <div className="inline-flex items-center gap-1.5 rounded-full border border-ccis-ink/15 bg-ccis-paper/90 px-3 py-1">
+                          <GraduationCap className="h-3.5 w-3.5 text-ccis-orange" />
+                          <span className="font-subtext text-[11px] text-ccis-ink">
+                            {user.studentEnrollment.program} •{" "}
+                            {user.studentEnrollment.yearLevel} Year •{" "}
+                            {user.studentEnrollment.organizationName}
+                          </span>
+                        </div>
+                      )}
                     </div>
                     <h2 className="font-display text-4xl leading-none tracking-tight text-ccis-ink sm:text-5xl">
-                      Welcome back, {user.fullName.split(" ")[0]}.
+                      Welcome back, {user.fullName.replace(",", "").split(" ")[0]}.
                     </h2>
                     <p className="max-w-2xl font-headline text-sm text-ccis-espresso sm:text-base">
                       Manage CCIS organizations, membership verifications,
@@ -299,23 +356,47 @@ export default function DashboardPage() {
 
               {/* Summary Metric Cards */}
               <section className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-                <Card
-                  className="cursor-pointer bg-ccis-paper transition-colors hover:border-ccis-orange"
-                  onClick={() => setActiveTab("organizations")}
-                >
-                  <CardHeader className="pb-2">
-                    <CardDescription>ORGANIZATIONS</CardDescription>
-                    <CardTitle className="flex items-center justify-between text-2xl">
-                      <span>{snapshot.organizations.length}</span>
-                      <Building2 className="h-5 w-5 text-ccis-orange" />
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <p className="font-subtext text-xs text-ccis-espresso">
-                      LSG &amp; accredited CCIS guilds
-                    </p>
-                  </CardContent>
-                </Card>
+                {isStaff ? (
+                  <Card
+                    className="cursor-pointer bg-ccis-paper transition-colors hover:border-ccis-orange"
+                    onClick={() => setActiveTab("students")}
+                  >
+                    <CardHeader className="pb-2">
+                      <CardDescription>ENROLLED STUDENTS</CardDescription>
+                      <CardTitle className="flex items-center justify-between text-2xl">
+                        <span>
+                          {(snapshot.studentCounts?.total ?? 1817).toLocaleString()}
+                        </span>
+                        <GraduationCap className="h-5 w-5 text-ccis-orange" />
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <p className="font-subtext text-xs text-ccis-espresso">
+                        BSIT ({snapshot.studentCounts?.BSIT ?? 925}) • BSIS (
+                        {snapshot.studentCounts?.BSIS ?? 483}) • BSCS (
+                        {snapshot.studentCounts?.BSCS ?? 409})
+                      </p>
+                    </CardContent>
+                  </Card>
+                ) : (
+                  <Card
+                    className="cursor-pointer bg-ccis-paper transition-colors hover:border-ccis-orange"
+                    onClick={() => setActiveTab("organizations")}
+                  >
+                    <CardHeader className="pb-2">
+                      <CardDescription>ORGANIZATIONS</CardDescription>
+                      <CardTitle className="flex items-center justify-between text-2xl">
+                        <span>{snapshot.organizations.length}</span>
+                        <Building2 className="h-5 w-5 text-ccis-orange" />
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <p className="font-subtext text-xs text-ccis-espresso">
+                        Recognized CCIS student organizations
+                      </p>
+                    </CardContent>
+                  </Card>
+                )}
 
                 <Card
                   className="cursor-pointer bg-ccis-paper transition-colors hover:border-ccis-orange"
@@ -464,6 +545,8 @@ export default function DashboardPage() {
               </div>
             </div>
           )}
+
+          {activeTab === "students" && isStaff && <StudentsTab />}
 
           {activeTab === "organizations" && (
             <OrganizationsTab

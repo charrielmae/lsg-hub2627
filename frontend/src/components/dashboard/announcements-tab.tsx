@@ -96,7 +96,7 @@ export function AnnouncementsTab({
             Council &amp; Organization Announcements
           </h2>
           <p className="font-headline text-sm text-ccis-espresso/85">
-            Official memorandums, assembly calls, and organization dispatches (`announcements`).
+            Official memorandums, assembly calls, and organization dispatches.
           </p>
         </div>
         <div className="flex flex-wrap gap-1.5">
@@ -116,7 +116,7 @@ export function AnnouncementsTab({
               variant={filterOrgId === org.id ? "brand" : "outline"}
               onClick={() => setFilterOrgId(org.id)}
             >
-              {org.type === "LSG" ? "CCISLSG" : org.name.split(" ")[0]}
+              {org.name}
             </Button>
           ))}
         </div>

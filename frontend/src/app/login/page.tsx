@@ -1,18 +1,19 @@
 "use client";
 
 import * as React from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
   ArrowRight,
-  Eye,
-  EyeOff,
-  KeyRound,
+  GraduationCap,
+  IdCard,
   Loader2,
   RefreshCw,
+  Shield,
   ShieldCheck,
-  UserCheck,
 } from "lucide-react";
 import { CcislsgCrest } from "@/components/ccislsg-crest";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -31,14 +32,18 @@ import {
   fetchAuthStatus,
   fetchCaptchaChallenge,
   fetchCurrentUser,
-  loginRequest,
+  studentLoginRequest,
 } from "@/lib/auth-api";
 
-export default function LoginPage() {
+const SAMPLE_STUDENT_IDS = [
+  { label: "BSIT • 1st Yr", idNo: "261-01458", name: "Ayuban, Charles Gerald" },
+  { label: "BSIS • 1st Yr", idNo: "261-01645", name: "Abbu, Lindsay" },
+  { label: "BSCS • 1st Yr", idNo: "261-02974", name: "Abuan, Daniela Joy" },
+];
+
+export default function StudentLoginPage() {
   const router = useRouter();
-  const [identifier, setIdentifier] = React.useState("");
-  const [password, setPassword] = React.useState("");
-  const [showPassword, setShowPassword] = React.useState(false);
+  const [studentNo, setStudentNo] = React.useState("");
   const [captcha, setCaptcha] = React.useState<CaptchaChallenge | null>(null);
   const [captchaAnswer, setCaptchaAnswer] = React.useState("");
   const [isLoadingCaptcha, setIsLoadingCaptcha] = React.useState(true);
@@ -104,9 +109,8 @@ export default function LoginPage() {
     setIsSubmitting(true);
 
     try {
-      await loginRequest(
-        identifier,
-        password,
+      await studentLoginRequest(
+        studentNo,
         captcha.captchaToken,
         captchaAnswer
       );
@@ -115,7 +119,7 @@ export default function LoginPage() {
       setError(
         err instanceof Error
           ? err.message
-          : "Authentication failed. Check that the NestJS backend is running on port 4000."
+          : "Sign-in failed. Check that the NestJS backend is running on port 4000."
       );
       setCaptchaAnswer("");
       await loadCaptcha();
@@ -124,34 +128,34 @@ export default function LoginPage() {
     }
   }
 
-  function applyDemoAccount(email: string, demoPassword: string) {
-    setIdentifier(email);
-    setPassword(demoPassword);
-    setError(null);
-  }
-
   return (
-    <main className="relative flex min-h-screen items-center justify-center overflow-hidden bg-ccis-cream/60 p-4 sm:p-6">
-      {/* Subtle warm brand ambient glow */}
+    <main className="relative flex min-h-screen items-center justify-center overflow-hidden bg-gradient-to-br from-ccis-cream/85 via-ccis-paper to-ccis-primary/40 p-4 sm:p-6">
+      {/* Warm student portal ambient glow */}
       <div
         aria-hidden="true"
         className="pointer-events-none fixed inset-0 overflow-hidden"
       >
-        <div className="absolute left-1/2 top-1/2 h-[30rem] w-[30rem] -translate-x-1/2 -translate-y-1/2 rounded-full bg-ccis-primary/55 blur-3xl" />
+        <div className="absolute left-1/2 top-1/2 h-[32rem] w-[32rem] -translate-x-1/2 -translate-y-1/2 rounded-full bg-ccis-primary/45 blur-3xl" />
       </div>
 
-      <Card className="relative z-10 w-full max-w-md border-ccis-ink/20 bg-ccis-paper/95 shadow-xl">
-        <CardHeader className="items-center space-y-2.5 pb-5 text-center">
+      <Card className="relative z-10 w-full max-w-md overflow-hidden border-ccis-ink/20 bg-ccis-paper/95 shadow-xl">
+        {/* Top Student Portal Accent Bar */}
+        <div className="h-1.5 w-full bg-gradient-to-r from-ccis-primary via-ccis-secondary to-ccis-orange" />
+
+        <CardHeader className="items-center space-y-2.5 pb-4 pt-6 text-center">
+          <Badge variant="cream" className="gap-1.5 px-3 py-1">
+            <GraduationCap className="h-3.5 w-3.5 text-ccis-orange" />
+            <span>CCIS Student Portal • ID Access</span>
+          </Badge>
+
           <CcislsgCrest className="h-20 w-20" />
+
           <div className="space-y-1">
-            <p className="font-subtext text-[11px] uppercase tracking-widest text-ccis-orange">
-              Local Student Government Hub
-            </p>
             <CardTitle className="font-display text-4xl tracking-tight text-ccis-ink">
-              CCISLSG
+              Student Sign In
             </CardTitle>
-            <CardDescription className="pt-0.5">
-              Sign in with your Student ID or institutional email
+            <CardDescription className="pt-0.5 text-xs">
+              Enter your CSU Student ID Number — no password required
             </CardDescription>
           </div>
         </CardHeader>
@@ -159,48 +163,24 @@ export default function LoginPage() {
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="identifier">
-                Email, Username, or Student No.
+              <Label
+                htmlFor="studentNo"
+                className="inline-flex items-center gap-1.5"
+              >
+                <IdCard className="h-4 w-4 text-ccis-orange" />
+                <span>Student ID Number</span>
               </Label>
               <Input
-                id="identifier"
-                name="identifier"
+                id="studentNo"
+                name="studentNo"
                 type="text"
-                autoComplete="username"
-                placeholder="e.g. 2023-00101 or charrielmae.ayuban@carsu.edu.ph"
-                value={identifier}
-                onChange={(e) => setIdentifier(e.target.value)}
+                autoComplete="off"
+                placeholder="e.g. 261-01458"
+                value={studentNo}
+                onChange={(e) => setStudentNo(e.target.value)}
+                className="h-12 text-center font-subtext text-base font-medium tracking-wider placeholder:font-normal placeholder:tracking-normal"
                 required
               />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="password">Password</Label>
-              <div className="relative">
-                <Input
-                  id="password"
-                  name="password"
-                  type={showPassword ? "text" : "password"}
-                  autoComplete="current-password"
-                  placeholder="Enter your password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="pr-10"
-                  required
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword((prev) => !prev)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-ccis-espresso/70 transition-colors hover:text-ccis-orange"
-                  aria-label={showPassword ? "Hide password" : "Show password"}
-                >
-                  {showPassword ? (
-                    <EyeOff className="h-4 w-4" />
-                  ) : (
-                    <Eye className="h-4 w-4" />
-                  )}
-                </button>
-              </div>
             </div>
 
             <div className="space-y-2">
@@ -288,11 +268,11 @@ export default function LoginPage() {
               {isSubmitting ? (
                 <>
                   <Loader2 className="h-4 w-4 animate-spin" />
-                  Signing In...
+                  Verifying Student ID...
                 </>
               ) : (
                 <>
-                  Sign In
+                  Enter Student Portal
                   <ArrowRight className="h-4 w-4" />
                 </>
               )}
@@ -300,46 +280,18 @@ export default function LoginPage() {
           </form>
         </CardContent>
 
-        {authStatus?.mode !== "supabase" && (
-          <>
-            <Separator />
-            <CardFooter className="flex flex-col items-stretch gap-2.5 pt-4">
-              <span className="text-center font-subtext text-[10px] uppercase tracking-wider text-ccis-espresso/75">
-                Quick-Fill Demo Accounts
-              </span>
-              <div className="grid grid-cols-2 gap-2">
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  onClick={() =>
-                    applyDemoAccount(
-                      "charrielmae.ayuban@carsu.edu.ph",
-                      "06162005"
-                    )
-                  }
-                >
-                  <KeyRound className="h-3.5 w-3.5 text-ccis-orange" />
-                  <span>Governor</span>
-                </Button>
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  onClick={() =>
-                    applyDemoAccount(
-                      "charlesgerald.ayuban@carsu.edu.ph",
-                      "charlesgerald123"
-                    )
-                  }
-                >
-                  <UserCheck className="h-3.5 w-3.5 text-ccis-secondary" />
-                  <span>Student</span>
-                </Button>
-              </div>
-            </CardFooter>
-          </>
-        )}
+        <Separator />
+
+        <CardFooter className="flex flex-col items-stretch gap-3 pt-4">
+          <Link
+            href="/login/officer"
+            className="flex items-center justify-center gap-1.5 rounded-lg border border-ccis-ink/15 bg-ccis-cream/55 px-3 py-2 font-headline text-xs font-medium text-ccis-espresso transition-colors hover:border-ccis-orange hover:bg-ccis-primary/35 hover:text-ccis-ink"
+          >
+            <Shield className="h-3.5 w-3.5 text-ccis-orange" />
+            <span>LSG / Org Officer? Sign in with Officer Credentials</span>
+            <ArrowRight className="h-3.5 w-3.5 text-ccis-orange" />
+          </Link>
+        </CardFooter>
       </Card>
     </main>
   );

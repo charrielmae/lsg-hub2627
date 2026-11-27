@@ -8,6 +8,8 @@ export type Role =
 
 export type OrgType = 'ORG' | 'LSG' | 'COUNCIL';
 
+export type Program = 'BSCS' | 'BSIS' | 'BSIT';
+
 export type MembershipStatus = 'PENDING' | 'APPROVED' | 'REJECTED';
 
 export type PaymentStatus = 'PENDING' | 'PAID' | 'FAILED' | 'CANCELLED';
@@ -137,6 +139,18 @@ export interface ClearanceRecord {
   issued_at: string;
 }
 
+export interface StudentMasterRecord {
+  id: string;
+  student_no: string;
+  full_name: string;
+  program: Program;
+  year_level: string;
+  organization_id: string;
+  college_id: string;
+  user_id?: string | null;
+  is_active: boolean;
+}
+
 export interface AuthenticatedUser {
   id: string;
   email: string;
@@ -148,6 +162,12 @@ export interface AuthenticatedUser {
   createdAt: string;
   college: CollegeRecord | null;
   studentProfile: StudentProfileRecord | null;
+  studentEnrollment: {
+    program: Program;
+    yearLevel: string;
+    organizationId: string;
+    organizationName: string;
+  } | null;
   officerOrganizations: Array<{
     id: string;
     name: string;

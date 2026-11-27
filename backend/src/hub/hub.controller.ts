@@ -6,6 +6,7 @@ import {
   Param,
   Patch,
   Post,
+  Query,
   Req,
   UseGuards,
 } from '@nestjs/common';
@@ -33,6 +34,24 @@ export class HubController {
   @Get('snapshot')
   getSnapshot(@Req() req: { user: AuthenticatedUser }) {
     return this.hubService.getSnapshot(req.user);
+  }
+
+  @Get('students')
+  listStudents(
+    @Req() req: { user: AuthenticatedUser },
+    @Query('program') program?: string,
+    @Query('year') year?: string,
+    @Query('search') search?: string,
+    @Query('page') page?: string,
+    @Query('limit') limit?: string,
+  ) {
+    return this.hubService.listStudents(req.user, {
+      program,
+      year,
+      search,
+      page: page ? Number(page) : 1,
+      limit: limit ? Number(limit) : 50,
+    });
   }
 
   @Post('organizations')
@@ -100,6 +119,14 @@ export class HubController {
     @Body() dto: CreateFeeItemDto,
   ) {
     return this.hubService.createFeeItem(req.user, dto);
+  }
+
+  @Delete('fee-items/:id')
+  deleteFeeItem(
+    @Req() req: { user: AuthenticatedUser },
+    @Param('id') id: string,
+  ) {
+    return this.hubService.deleteFeeItem(req.user, id);
   }
 
   @Post('payments/checkout')

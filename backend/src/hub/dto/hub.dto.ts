@@ -131,6 +131,10 @@ export class CheckoutPaymentDto {
   @IsString()
   @IsNotEmpty()
   feeItemId: string;
+
+  @IsOptional()
+  @IsString()
+  paymentMethod?: string;
 }
 
 export class UpsertClearanceDto {

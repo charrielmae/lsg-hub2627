@@ -61,6 +61,124 @@ export class HubService {
     return this.getDemoSnapshot(user);
   }
 
+  async listStudents(
+    user: AuthenticatedUser,
+    params: {
+      program?: string;
+      year?: string;
+      search?: string;
+      page?: number;
+      limit?: number;
+    },
+  ) {
+    this.assertStaff(user);
+    const page = Math.max(1, params.page || 1);
+    const limit = Math.min(100, Math.max(10, params.limit || 50));
+    const programFilter =
+      params.program && params.program !== 'ALL'
+        ? params.program.toUpperCase()
+        : null;
+    const yearFilter =
+      params.year && params.year !== 'ALL' ? params.year : null;
+    const search = params.search?.trim().toLowerCase() || '';
+
+    if (this.supabaseService.isConfigured()) {
+      const admin = this.supabaseService.getAdminClient();
+
+      const [totalRes, bsitRes, bsisRes, bscsRes, orgsRes] = await Promise.all([
+        admin.from('students').select('id', { count: 'exact', head: true }),
+        admin
+          .from('students')
+          .select('id', { count: 'exact', head: true })
+          .eq('program', 'BSIT'),
+        admin
+          .from('students')
+          .select('id', { count: 'exact', head: true })
+          .eq('program', 'BSIS'),
+        admin
+          .from('students')
+          .select('id', { count: 'exact', head: true })
+          .eq('program', 'BSCS'),
+        admin.from('organizations').select('id, name'),
+      ]);
+
+      const orgMap = new Map(
+        ((orgsRes.data || []) as Array<{ id: string; name: string }>).map(
+          (o) => [o.id, o.name],
+        ),
+      );
+
+      let query = admin
+        .from('students')
+        .select('*', { count: 'exact' })
+        .order('full_name', { ascending: true });
+
+      if (programFilter) query = query.eq('program', programFilter);
+      if (yearFilter) query = query.eq('year_level', yearFilter);
+      if (search) {
+        query = query.or(
+          `student_no.ilike.%${search}%,full_name.ilike.%${search}%`,
+        );
+      }
+
+      const from = (page - 1) * limit;
+      const { data, count } = await query.range(from, from + limit - 1);
+      const totalFiltered = count ?? 0;
+
+      return {
+        counts: {
+          total: totalRes.count ?? 0,
+          BSIT: bsitRes.count ?? 0,
+          BSIS: bsisRes.count ?? 0,
+          BSCS: bscsRes.count ?? 0,
+        },
+        items: (data || []).map((s: Record<string, unknown>) => ({
+          ...s,
+          organizationName:
+            orgMap.get(s.organization_id as string) ?? (s.program as string),
+        })),
+        totalFiltered,
+        page,
+        limit,
+        totalPages: Math.max(1, Math.ceil(totalFiltered / limit)),
+      };
+    }
+
+    const orgsMap = new Map(
+      this.demoStore.organizations.map((o) => [o.id, o.name]),
+    );
+    const counts = this.demoStore.getProgramCounts();
+
+    const filtered = this.demoStore.students.filter((s) => {
+      if (programFilter && s.program !== programFilter) return false;
+      if (yearFilter && s.year_level !== yearFilter) return false;
+      if (
+        search &&
+        !s.student_no.toLowerCase().includes(search) &&
+        !s.full_name.toLowerCase().includes(search)
+      ) {
+        return false;
+      }
+      return true;
+    });
+
+    const totalFiltered = filtered.length;
+    const start = (page - 1) * limit;
+    const items = filtered.slice(start, start + limit).map((s) => ({
+      ...s,
+      organizationName: orgsMap.get(s.organization_id) ?? s.program,
+    }));
+
+    return {
+      counts,
+      items,
+      totalFiltered,
+      page,
+      limit,
+      totalPages: Math.max(1, Math.ceil(totalFiltered / limit)),
+    };
+  }
+
   private getDemoSnapshot(user: AuthenticatedUser) {
     const isStaff =
       isStaffRole(user.role) || user.officerOrganizations.length > 0;
@@ -96,9 +214,17 @@ export class HubService {
         (r) => r.organization_id === org.id,
       );
 
-      const approvedMembersCount = this.demoStore.memberships.filter(
-        (m) => m.organization_id === org.id && m.status === 'APPROVED',
-      ).length;
+      const designatedCount =
+        org.type === 'LSG'
+          ? this.demoStore.students.length
+          : this.demoStore.students.filter((s) => s.organization_id === org.id)
+              .length;
+
+      const approvedMembersCount =
+        designatedCount ||
+        this.demoStore.memberships.filter(
+          (m) => m.organization_id === org.id && m.status === 'APPROVED',
+        ).length;
 
       return {
         ...org,
@@ -150,10 +276,34 @@ export class HubService {
         authorName: usersMap.get(a.author_id)?.full_name ?? 'Council Officer',
       }));
 
-    const feeItems = this.demoStore.feeItems.map((f) => ({
-      ...f,
-      organization: orgsMap.get(f.organization_id) ?? null,
-    }));
+    const studentAllowedOrgIds = new Set<string>();
+    for (const org of this.demoStore.organizations) {
+      if (org.type === 'LSG') studentAllowedOrgIds.add(org.id);
+    }
+    if (user.studentEnrollment?.organizationId) {
+      studentAllowedOrgIds.add(user.studentEnrollment.organizationId);
+    }
+    for (const m of this.demoStore.memberships) {
+      if (m.user_id === user.id && m.status === 'APPROVED') {
+        studentAllowedOrgIds.add(m.organization_id);
+      }
+    }
+
+    const feeItems = this.demoStore.feeItems
+      .filter(
+        (f) =>
+          f.is_active &&
+          (isStaff || studentAllowedOrgIds.has(f.organization_id)),
+      )
+      .map((f) => ({
+        ...f,
+        organization: orgsMap.get(f.organization_id) ?? null,
+        paidCount: isStaff
+          ? this.demoStore.payments.filter(
+              (p) => p.fee_item_id === f.id && p.status === 'PAID',
+            ).length
+          : undefined,
+      }));
 
     const visiblePayments = isStaff
       ? this.demoStore.payments
@@ -232,6 +382,7 @@ export class HubService {
       payments,
       clearances,
       directoryUsers,
+      studentCounts: isStaff ? this.demoStore.getProgramCounts() : undefined,
     };
   }
 
@@ -354,10 +505,34 @@ export class HubService {
       authorName: usersMap.get(a.author_id)?.full_name ?? 'Council Officer',
     }));
 
-    const feeItems = rawFeeItems.map((f) => ({
-      ...f,
-      organization: orgsMap.get(f.organization_id) ?? null,
-    }));
+    const studentAllowedOrgIds = new Set<string>();
+    for (const org of orgs) {
+      if (org.type === 'LSG') studentAllowedOrgIds.add(org.id);
+    }
+    if (user.studentEnrollment?.organizationId) {
+      studentAllowedOrgIds.add(user.studentEnrollment.organizationId);
+    }
+    for (const m of rawMemberships) {
+      if (m.user_id === user.id && m.status === 'APPROVED') {
+        studentAllowedOrgIds.add(m.organization_id);
+      }
+    }
+
+    const feeItems = rawFeeItems
+      .filter(
+        (f) =>
+          f.is_active &&
+          (isStaff || studentAllowedOrgIds.has(f.organization_id)),
+      )
+      .map((f) => ({
+        ...f,
+        organization: orgsMap.get(f.organization_id) ?? null,
+        paidCount: isStaff
+          ? rawPayments.filter(
+              (p) => p.fee_item_id === f.id && p.status === 'PAID',
+            ).length
+          : undefined,
+      }));
 
     const payments = rawPayments.map((p) => {
       const payer = usersMap.get(p.user_id);
@@ -468,6 +643,7 @@ export class HubService {
       is_active: true,
     };
     this.demoStore.organizations.push(record);
+    this.demoStore.persist();
     return record;
   }
 
@@ -508,6 +684,7 @@ export class HubService {
       organization_id: organizationId,
     };
     this.demoStore.orgOfficers.push(record);
+    this.demoStore.persist();
     return record;
   }
 
@@ -540,6 +717,7 @@ export class HubService {
       description: dto.description?.trim() || null,
     };
     this.demoStore.membershipRequirements.push(record);
+    this.demoStore.persist();
     return record;
   }
 
@@ -621,6 +799,7 @@ export class HubService {
       }
     }
 
+    this.demoStore.persist();
     return membership;
   }
 
@@ -657,6 +836,7 @@ export class HubService {
     target.status = dto.status;
     target.remarks = dto.remarks?.trim() || target.remarks;
     target.verified_by = user.id;
+    this.demoStore.persist();
     return target;
   }
 
@@ -695,6 +875,7 @@ export class HubService {
       updated_at: now,
     };
     this.demoStore.announcements.unshift(announcement);
+    this.demoStore.persist();
     return announcement;
   }
 
@@ -711,6 +892,7 @@ export class HubService {
     const idx = this.demoStore.announcements.findIndex((a) => a.id === id);
     if (idx === -1) throw new NotFoundException('Announcement not found.');
     this.demoStore.announcements.splice(idx, 1);
+    this.demoStore.persist();
     return { deleted: true };
   }
 
@@ -744,13 +926,39 @@ export class HubService {
       school_year: dto.schoolYear.trim(),
       is_active: true,
     };
-    this.demoStore.feeItems.push(record);
+    this.demoStore.feeItems.unshift(record);
+    this.demoStore.persist();
     return record;
   }
 
+  async deleteFeeItem(user: AuthenticatedUser, id: string) {
+    this.assertStaff(user);
+
+    if (this.supabaseService.isConfigured()) {
+      const admin = this.supabaseService.getAdminClient();
+      const { error } = await admin
+        .from('fee_items')
+        .update({ is_active: false })
+        .eq('id', id);
+      if (error) throw new BadRequestException(error.message);
+      return { deleted: true };
+    }
+
+    const target = this.demoStore.feeItems.find((f) => f.id === id);
+    if (!target) throw new NotFoundException('Fee item not found.');
+    target.is_active = false;
+    this.demoStore.persist();
+    return { deleted: true };
+  }
+
   async checkoutPayment(user: AuthenticatedUser, dto: CheckoutPaymentDto) {
-    const checkoutRef = `cs_ccis_${randomBytes(5).toString('hex')}`;
-    const paymentRef = `pay_ccis_${randomBytes(5).toString('hex')}`;
+    const methodTag =
+      (dto.paymentMethod || 'paymongo')
+        .toLowerCase()
+        .replace(/[^a-z0-9]/g, '')
+        .slice(0, 10) || 'paymongo';
+    const checkoutRef = `cs_${methodTag}_${randomBytes(4).toString('hex')}`;
+    const paymentRef = `pay_${methodTag}_${randomBytes(5).toString('hex')}`;
     const receiptNo = `OR-CCIS-${new Date().getFullYear()}-${Math.floor(
       100000 + Math.random() * 900000,
     )}`;
@@ -839,6 +1047,7 @@ export class HubService {
       receipt_url: `/dashboard?tab=finance&receipt=${receiptNo}`,
     };
     this.demoStore.receipts.push(receipt);
+    this.demoStore.persist();
 
     return { payment, receipt };
   }
@@ -908,6 +1117,7 @@ export class HubService {
       existing.status = dto.status;
       existing.issued_by = user.id;
       existing.issued_at = now;
+      this.demoStore.persist();
       return existing;
     }
 
@@ -921,6 +1131,7 @@ export class HubService {
       issued_at: now,
     };
     this.demoStore.clearances.unshift(record);
+    this.demoStore.persist();
     return record;
   }
 
@@ -1039,6 +1250,7 @@ export class HubService {
     if (dto.barangayName !== undefined)
       profile.barangay_name = dto.barangayName.trim() || null;
 
+    this.demoStore.persist();
     return this.demoStore.buildAuthenticatedUser(targetUser);
   }
 }
