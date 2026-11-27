@@ -4,6 +4,8 @@ export type Role =
   | 'ORG_OFFICER'
   | 'LSG_OFFICER'
   | 'CCISLSG_GOVERNOR'
+  | 'CCISLSG Public Relation Officer'
+  | 'CCISLSG Committee Staff'
   | 'ADMIN';
 
 export type OrgType = 'ORG' | 'LSG' | 'COUNCIL';

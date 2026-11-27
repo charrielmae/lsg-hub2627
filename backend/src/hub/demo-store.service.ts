@@ -24,6 +24,8 @@ import {
 
 const CCIS_COLLEGE_ID = '11111111-1111-4111-8111-111111111111';
 const OFFICER_USER_ID = '00000000-0000-4000-8000-000000000001';
+const PRO_OFFICER_USER_ID = '6b11430c-9d20-4504-818e-f6ccda7643c2';
+const STAFF_OFFICER_USER_ID = 'ab1905c7-06af-4ea9-8513-f11e36955495';
 const STUDENT_USER_ID = '00000000-0000-4000-8000-000000000002';
 const STUDENT2_USER_ID = '00000000-0000-4000-8000-000000000003';
 
@@ -85,6 +87,30 @@ export class DemoStoreService {
       is_active: true,
       created_at: '2026-08-15T08:00:00.000Z',
       password_hash: hashPassword('06162005'),
+    },
+    {
+      id: PRO_OFFICER_USER_ID,
+      google_id: null,
+      email: 'hazelmae.bojawe@carsu.edu.ph',
+      username: 'hazelmae.bojawe',
+      full_name: 'Bojawe, Hazel Mae P.',
+      role: 'CCISLSG Public Relation Officer',
+      college_id: CCIS_COLLEGE_ID,
+      is_active: true,
+      created_at: '2026-08-16T08:00:00.000Z',
+      password_hash: hashPassword('hazel123'),
+    },
+    {
+      id: STAFF_OFFICER_USER_ID,
+      google_id: null,
+      email: 'johnpaul.quedit@carsu.edu.ph',
+      username: 'johnpaul.quedit',
+      full_name: 'Quedit, John Paul',
+      role: 'CCISLSG Committee Staff',
+      college_id: CCIS_COLLEGE_ID,
+      is_active: true,
+      created_at: '2026-08-16T08:30:00.000Z',
+      password_hash: hashPassword('jp123'),
     },
     {
       id: STUDENT_USER_ID,
@@ -155,6 +181,34 @@ export class DemoStoreService {
       barangay_code: '160202003',
       barangay_name: 'Ampayon',
     },
+    {
+      id: '22222222-2222-4222-8222-222222222204',
+      user_id: PRO_OFFICER_USER_ID,
+      student_no: '241-01407',
+      contact_no: null,
+      region_code: '160000000',
+      region_name: 'Caraga Region (Region XIII)',
+      province_code: '160200000',
+      province_name: 'Agusan del Norte',
+      city_code: '8600',
+      city_name: 'Butuan City',
+      barangay_code: '160202003',
+      barangay_name: 'Ampayon',
+    },
+    {
+      id: '22222222-2222-4222-8222-222222222205',
+      user_id: STAFF_OFFICER_USER_ID,
+      student_no: '241-03297',
+      contact_no: null,
+      region_code: '160000000',
+      region_name: 'Caraga Region (Region XIII)',
+      province_code: '160200000',
+      province_name: 'Agusan del Norte',
+      city_code: '8600',
+      city_name: 'Butuan City',
+      barangay_code: '160202003',
+      barangay_name: 'Ampayon',
+    },
   ];
 
   readonly organizations: OrganizationRecord[] = [
@@ -204,6 +258,16 @@ export class DemoStoreService {
     {
       id: '44444444-4444-4444-8444-444444444400',
       user_id: OFFICER_USER_ID,
+      organization_id: CCISLSG_ORG_ID,
+    },
+    {
+      id: '44444444-4444-4444-8444-444444444402',
+      user_id: PRO_OFFICER_USER_ID,
+      organization_id: CCISLSG_ORG_ID,
+    },
+    {
+      id: '44444444-4444-4444-8444-444444444403',
+      user_id: STAFF_OFFICER_USER_ID,
       organization_id: CCISLSG_ORG_ID,
     },
     {
@@ -407,11 +471,17 @@ export class DemoStoreService {
         );
       }
       if (Array.isArray(raw.orgOfficers) && raw.orgOfficers.length > 0) {
-        this.orgOfficers.splice(
-          0,
-          this.orgOfficers.length,
-          ...raw.orgOfficers,
-        );
+        for (const oo of raw.orgOfficers as OrgOfficerRecord[]) {
+          if (
+            !this.orgOfficers.some(
+              (x) =>
+                x.user_id === oo.user_id &&
+                x.organization_id === oo.organization_id,
+            )
+          ) {
+            this.orgOfficers.push(oo);
+          }
+        }
       }
       if (
         Array.isArray(raw.membershipRequirements) &&
@@ -454,7 +524,13 @@ export class DemoStoreService {
       }
       if (Array.isArray(raw.users) && raw.users.length > 0) {
         for (const savedUser of raw.users as UserRecord[]) {
-          if (!this.users.some((u) => u.id === savedUser.id)) {
+          if (
+            !this.users.some(
+              (u) =>
+                u.id === savedUser.id ||
+                u.email.toLowerCase() === savedUser.email.toLowerCase(),
+            )
+          ) {
             this.users.push(savedUser);
           }
         }
@@ -466,6 +542,7 @@ export class DemoStoreService {
           }
         }
       }
+      this.persist();
     } catch {
       // Ignore corrupted local cache and keep clean defaults
     }

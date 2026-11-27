@@ -4,6 +4,8 @@ export type Role =
   | "ORG_OFFICER"
   | "LSG_OFFICER"
   | "CCISLSG_GOVERNOR"
+  | "CCISLSG Public Relation Officer"
+  | "CCISLSG Committee Staff"
   | "ADMIN";
 
 export type OrgType = "ORG" | "LSG" | "COUNCIL";
@@ -68,6 +70,10 @@ export function formatRoleLabel(role: Role): string {
   switch (role) {
     case "CCISLSG_GOVERNOR":
       return "CCISLSG Governor";
+    case "CCISLSG Public Relation Officer":
+      return "CCISLSG Public Relation Officer";
+    case "CCISLSG Committee Staff":
+      return "CCISLSG Committee Staff";
     case "LSG_OFFICER":
       return "LSG Officer";
     case "ORG_OFFICER":

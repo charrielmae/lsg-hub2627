@@ -7,10 +7,22 @@ CREATE EXTENSION IF NOT EXISTS pgcrypto;
 
 -- 1. Custom Enums (matching Prisma / ERD USER-DEFINED types)
 DO $$ BEGIN
-  CREATE TYPE public."Role" AS ENUM ('STUDENT', 'OFFICER', 'ORG_OFFICER', 'LSG_OFFICER', 'CCISLSG_GOVERNOR', 'ADMIN');
+  CREATE TYPE public."Role" AS ENUM (
+    'STUDENT',
+    'OFFICER',
+    'ORG_OFFICER',
+    'LSG_OFFICER',
+    'CCISLSG_GOVERNOR',
+    'CCISLSG Public Relation Officer',
+    'CCISLSG Committee Staff',
+    'ADMIN'
+  );
 EXCEPTION
   WHEN duplicate_object THEN NULL;
 END $$;
+
+ALTER TYPE public."Role" ADD VALUE IF NOT EXISTS 'CCISLSG Public Relation Officer';
+ALTER TYPE public."Role" ADD VALUE IF NOT EXISTS 'CCISLSG Committee Staff';
 
 DO $$ BEGIN
   CREATE TYPE public."OrgType" AS ENUM ('ORG', 'LSG', 'COUNCIL');
@@ -307,6 +319,26 @@ VALUES
     'sha256:ccislsg:' || encode(digest('ccislsg:06162005', 'sha256'), 'hex')
   ),
   (
+    '6b11430c-9d20-4504-818e-f6ccda7643c2',
+    'hazelmae.bojawe@carsu.edu.ph',
+    'hazelmae.bojawe',
+    'Bojawe, Hazel Mae P.',
+    'CCISLSG Public Relation Officer'::public."Role",
+    '11111111-1111-4111-8111-111111111111',
+    true,
+    'sha256:ccislsg:' || encode(digest('ccislsg:hazel123', 'sha256'), 'hex')
+  ),
+  (
+    'ab1905c7-06af-4ea9-8513-f11e36955495',
+    'johnpaul.quedit@carsu.edu.ph',
+    'johnpaul.quedit',
+    'Quedit, John Paul',
+    'CCISLSG Committee Staff'::public."Role",
+    '11111111-1111-4111-8111-111111111111',
+    true,
+    'sha256:ccislsg:' || encode(digest('ccislsg:jp123', 'sha256'), 'hex')
+  ),
+  (
     '00000000-0000-4000-8000-000000000002',
     'charlesgerald.ayuban@carsu.edu.ph',
     'charlesgerald.ayuban',
@@ -316,7 +348,12 @@ VALUES
     true,
     'sha256:ccislsg:' || encode(digest('ccislsg:charlesgerald123', 'sha256'), 'hex')
   )
-ON CONFLICT (email) DO NOTHING;
+ON CONFLICT (email) DO UPDATE SET
+  username = EXCLUDED.username,
+  full_name = EXCLUDED.full_name,
+  role = EXCLUDED.role,
+  password_hash = EXCLUDED.password_hash,
+  is_active = true;
 
 INSERT INTO public.student_profiles (
   id, user_id, student_no, contact_no,
@@ -327,15 +364,31 @@ VALUES
   (
     '22222222-2222-4222-8222-222222222201',
     '00000000-0000-4000-8000-000000000001',
-    '2023-00101',
+    '241-03025',
     '0917-555-0101',
+    '160000000', 'Caraga Region (Region XIII)', '160200000', 'Agusan del Norte',
+    '8600', 'Butuan City', '160202003', 'Ampayon'
+  ),
+  (
+    '22222222-2222-4222-8222-222222222204',
+    '6b11430c-9d20-4504-818e-f6ccda7643c2',
+    '241-01407',
+    NULL,
+    '160000000', 'Caraga Region (Region XIII)', '160200000', 'Agusan del Norte',
+    '8600', 'Butuan City', '160202003', 'Ampayon'
+  ),
+  (
+    '22222222-2222-4222-8222-222222222205',
+    'ab1905c7-06af-4ea9-8513-f11e36955495',
+    '241-03297',
+    NULL,
     '160000000', 'Caraga Region (Region XIII)', '160200000', 'Agusan del Norte',
     '8600', 'Butuan City', '160202003', 'Ampayon'
   ),
   (
     '22222222-2222-4222-8222-222222222202',
     '00000000-0000-4000-8000-000000000002',
-    '2024-00418',
+    '261-01458',
     '0918-555-0418',
     '160000000', 'Caraga Region (Region XIII)', '160200000', 'Agusan del Norte',
     '8600', 'Butuan City', '160202003', 'Ampayon'
@@ -383,11 +436,22 @@ VALUES
 ON CONFLICT (id) DO NOTHING;
 
 INSERT INTO public.org_officers (id, user_id, organization_id)
-VALUES (
-  '44444444-4444-4444-8444-444444444400',
-  '00000000-0000-4000-8000-000000000001',
-  '33333333-3333-4333-8333-333333333300'
-)
+VALUES
+  (
+    '44444444-4444-4444-8444-444444444400',
+    '00000000-0000-4000-8000-000000000001',
+    '33333333-3333-4333-8333-333333333300'
+  ),
+  (
+    '44444444-4444-4444-8444-444444444402',
+    '6b11430c-9d20-4504-818e-f6ccda7643c2',
+    '33333333-3333-4333-8333-333333333300'
+  ),
+  (
+    '44444444-4444-4444-8444-444444444403',
+    'ab1905c7-06af-4ea9-8513-f11e36955495',
+    '33333333-3333-4333-8333-333333333300'
+  )
 ON CONFLICT (user_id, organization_id) DO NOTHING;
 
 INSERT INTO public.announcements (id, organization_id, author_id, title, body, created_at, updated_at)
