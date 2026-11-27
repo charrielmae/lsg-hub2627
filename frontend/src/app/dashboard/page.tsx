@@ -62,48 +62,48 @@ const NAV_ITEMS: Array<{
   staffOnly?: boolean;
   icon: React.ComponentType<{ className?: string }>;
 }> = [
-  {
-    key: "overview",
-    label: "Overview",
-    icon: LayoutDashboard,
-  },
-  {
-    key: "students",
-    label: "Students",
-    staffOnly: true,
-    icon: GraduationCap,
-  },
-  {
-    key: "organizations",
-    label: "Organizations",
-    icon: Building2,
-  },
-  {
-    key: "memberships",
-    label: "Memberships",
-    icon: Users,
-  },
-  {
-    key: "announcements",
-    label: "Announcements",
-    icon: Megaphone,
-  },
-  {
-    key: "finance",
-    label: "Fees & Payments",
-    icon: CreditCard,
-  },
-  {
-    key: "clearances",
-    label: "Clearances",
-    icon: ClipboardCheck,
-  },
-  {
-    key: "profile",
-    label: "Profile",
-    icon: UserCircle2,
-  },
-];
+    {
+      key: "overview",
+      label: "Overview",
+      icon: LayoutDashboard,
+    },
+    {
+      key: "students",
+      label: "Students",
+      staffOnly: true,
+      icon: GraduationCap,
+    },
+    {
+      key: "organizations",
+      label: "Organizations",
+      icon: Building2,
+    },
+    {
+      key: "memberships",
+      label: "Memberships",
+      icon: Users,
+    },
+    {
+      key: "announcements",
+      label: "Announcements",
+      icon: Megaphone,
+    },
+    {
+      key: "finance",
+      label: "Fees & Payments",
+      icon: CreditCard,
+    },
+    {
+      key: "clearances",
+      label: "Clearances",
+      icon: ClipboardCheck,
+    },
+    {
+      key: "profile",
+      label: "Profile",
+      icon: UserCircle2,
+    },
+  ];
 
 export default function DashboardPage() {
   const router = useRouter();
@@ -289,9 +289,8 @@ export default function DashboardPage() {
               title="Refresh data"
             >
               <RefreshCw
-                className={`h-3.5 w-3.5 text-ccis-espresso ${
-                  refreshing ? "animate-spin" : ""
-                }`}
+                className={`h-3.5 w-3.5 text-ccis-espresso ${refreshing ? "animate-spin" : ""
+                  }`}
               />
             </Button>
           </div>
@@ -604,7 +603,11 @@ export default function DashboardPage() {
           )}
 
           {activeTab === "profile" && (
-            <ProfileTab user={user} onUserUpdated={(u) => setUser(u)} />
+            <ProfileTab
+              user={user}
+              memberships={snapshot.memberships}
+              onUserUpdated={(u) => setUser(u)}
+            />
           )}
         </div>
       </main>
